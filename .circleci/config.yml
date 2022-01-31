@@ -1,0 +1,76 @@
+<<<<<<< HEAD
+version: 2.1
+orbs:
+  python: circleci/python@1.5.0
+  #codecov: codecov/codecov@1.0.2
+jobs:
+  build-and-test:
+    docker:
+      - image: cimg/python:3.8
+    # environment:
+    #   PYTHONPATH=./App
+    #working_directory: ~/App
+    steps:
+      - checkout
+      - python/install-packages:
+           pkg-manager: pip
+
+      - run:
+          name: Setup Virtual Env
+          command: |
+            virtualenv -p python3.8 env
+            echo "source ./env/bin/activate" >> $BASH_ENV
+
+      - run:
+          name: Install Python dependencies
+          command:
+            python -m pip install --upgrade pip
+            pip install  -r requirements.txt
+            pip install pytest
+            pip install pytest-cov
+            pip install pytest-html
+      #- python/install-deps
+      #- python/tests
+      - run:
+          name: Run tests
+          command: python -m pytest --junitxml=test-reports/junit.xml --html=test-reports/report.html --cov=App/tests --cov-report=html:test-reports --self-contained-html
+
+
+      - store_test_results:
+          path: test-reports
+      - store_artifacts:
+          path: test-reports
+          destination: apptestflask
+
+workflows:
+  main:
+    jobs:
+      - build-and-test
+=======
+# Use the latest 2.1 version of CircleCI pipeline process engine.
+# See: https://circleci.com/docs/2.0/configuration-reference
+version: 2.1
+
+# Define a job to be invoked later in a workflow.
+# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
+jobs:
+  say-hello:
+    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
+    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
+    docker:
+      - image: cimg/base:stable
+    # Add steps to the job
+    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
+    steps:
+      - checkout
+      - run:
+          name: "Say hello"
+          command: "echo Hello, World!"
+
+# Invoke jobs via workflows
+# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
+workflows:
+  say-hello-workflow:
+    jobs:
+      - say-hello
+>>>>>>> 5dc77640aa99ecdd61becfb9712909402aa4cbb9
